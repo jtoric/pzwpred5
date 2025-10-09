@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}{{ ad.title }} - UNIZD Oglasnik{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                {% if ad.image %}
+                <img src="{{ url_for('static', filename='uploads/' + ad.image) }}" class="card-img-top"
+                    alt="{{ ad.title }}" style="height: 400px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                    style="height: 400px;">
+                    <i class="bi bi-image display-1 text-muted"></i>
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h1 class="card-title h2">{{ ad.title }}</h1>
+                        <span class="badge bg-primary fs-6">{{ ad.category }}</span>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-currency-euro text-success me-2"></i>
+                                <span class="price-tag fs-3">{{ ad.price }} €</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {% if ad.location %}
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-geo-alt text-muted me-2"></i>
+                                <span>{{ ad.location }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>Opis:</h5>
+                        <p class="card-text">{{ ad.description|replace('\n', '<br>')|safe }}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-person-circle text-primary me-2"></i>
+                            <span class="fw-semibold">{{ ad.seller }}</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-telephone text-success me-2"></i>
+                            <a href="tel:{{ ad.cellNo }}" class="text-decoration-none">
+                                {{ ad.cellNo }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar"></i> Objavljeno: {{ ad.created_at[:16].replace('T', ' ') }}
+                            </small>
+                        </div>
+                        <div>
+                            <div class="btn-group">
+                                <a href="{{ url_for('ads') }}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left"></i> Povratak na oglase
+                                </a>
+                                <form method="POST" action="{{ url_for('delete_ad', ad_id=ad.id) }}" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger"
+                                        onclick="return confirm('Jeste li sigurni da želite obrisati ovaj oglas?')">
+                                        <i class="bi bi-trash"></i> Obriši
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-person-circle"></i> Kontakt
+                    </h5>
+                    <p class="card-text">
+                        Za više informacija o ovom proizvodu, kontaktirajte prodavača:
+                    </p>
+                    <div class="mb-3">
+                        <strong>{{ ad.username }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preporučeni oglasi -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-star"></i> Preporučeno
+                    </h5>
+                    <p class="card-text text-muted">
+                        <small>Oglasi iz iste kategorije</small>
+                    </p>
+                    <!-- Ovdje bi se dodali preporučeni oglasi iz iste kategorije -->
+                    <div class="text-center">
+                        <a href="{{ url_for('ads', category=ad.category) }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-grid"></i> Pogledaj sve u {{ ad.category }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

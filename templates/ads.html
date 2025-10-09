@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Svi oglasi - UNIZD Oglasnik{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-grid text-primary"></i>
+                    Svi oglasi
+                    {% if selected_category %}
+                    - {{ selected_category }}
+                    {% endif %}
+                </h2>
+            </div>
+
+            <!-- Filteri -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-funnel"></i> Filtriraj po kategoriji
+                    </h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ url_for('ads') }}"
+                            class="btn {% if not selected_category %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                            Sve kategorije
+                        </a>
+                        <a href="{{ url_for('ads', category='Elektronika') }}"
+                            class="btn {% if selected_category == 'Elektronika' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                            <i class="bi bi-laptop"></i> Elektronika
+                        </a>
+                        <a href="{{ url_for('ads', category='Dom i vrt') }}"
+                            class="btn {% if selected_category == 'Dom i vrt' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                            <i class="bi bi-house"></i> Dom i vrt
+                        </a>
+                        <a href="{{ url_for('ads', category='Automobili') }}"
+                            class="btn {% if selected_category == 'Automobili' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                            <i class="bi bi-car-front"></i> Automobili
+                        </a>
+                        <a href="{{ url_for('ads', category='Odjeća') }}"
+                            class="btn {% if selected_category == 'Odjeća' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                            <i class="bi bi-bag"></i> Odjeća
+                        </a>
+                        <a href="{{ url_for('ads', category='Sport') }}"
+                            class="btn {% if selected_category == 'Sport' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                            <i class="bi bi-trophy"></i> Sport
+                        </a>
+                        <a href="{{ url_for('ads', category='Knjige') }}"
+                            class="btn {% if selected_category == 'Knjige' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                            <i class="bi bi-book"></i> Knjige
+                        </a>
+                        <a href="{{ url_for('ads', category='Ostalo') }}"
+                            class="btn {% if selected_category == 'Ostalo' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                            <i class="bi bi-three-dots"></i> Ostalo
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oglasi -->
+            {% if ads %}
+            <div class="row g-4">
+                {% for ad in ads %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card card-hover h-100">
+                        {% if ad.image %}
+                        <img src="{{ url_for('static', filename='uploads/' + ad.image) }}" class="card-img-top ad-image"
+                            alt="{{ ad.title }}">
+                        {% else %}
+                        <div class="card-img-top ad-image bg-light d-flex align-items-center justify-content-center">
+                            <i class="bi bi-image display-4 text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ ad.title }}</h5>
+                            <p class="card-text flex-grow-1">{{ ad.description[:100] }}{% if ad.description|length > 100
+                                %}...{% endif %}</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-semibold text-primary">{{ ad.seller }}</span>
+                                <small class="text-muted">
+                                    <i class="bi bi-telephone me-1"></i>{{ ad.cellNo }}
+                                </small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="price-tag">{{ ad.price }} €</span>
+                                <span class="badge bg-primary">{{ ad.category }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-geo-alt"></i> {{ ad.location }}
+                                </small>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> {{ ad.created_at[:10] }}
+                                </small>
+                            </div>
+                            <a href="{{ url_for('ad_detail', ad_id=ad.id) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye"></i> Pogledaj
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox display-4 text-muted mb-3"></i>
+                <h4 class="text-muted">
+                    {% if selected_category %}
+                    Nema oglasa u kategoriji "{{ selected_category }}"
+                    {% else %}
+                    Nema objavljenih oglasa
+                    {% endif %}
+                </h4>
+                <p class="text-muted">
+                    Budite prvi koji će objaviti oglas u ovoj kategoriji!
+                </p>
+                <a href="{{ url_for('new_ad') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Objavi oglas
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

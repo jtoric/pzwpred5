@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form, render_field %}
+
+{% block title %}Novi oglas - UNIZD Oglasnik{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">
+                        <i class="bi bi-plus-circle text-primary"></i>
+                        Novi oglas
+                    </h2>
+                    <p class="text-center text-muted mb-4">
+                        Objavite svoj oglas i počnite prodavati
+                    </p>
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        {{ render_field(form.title) }}
+                        {{ render_field(form.description) }}
+                        {{ render_field(form.seller) }}
+                        {{ render_field(form.cellNo) }}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ render_field(form.price) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ render_field(form.category) }}
+                            </div>
+                        </div>
+                        
+                        {{ render_field(form.location) }}
+                        {{ render_field(form.image) }}
+                        
+                        <!-- Preview slike -->
+                        <div id="imagePreview" class="mb-3" style="display: none;">
+                            <label class="form-label">Pregled slike:</label>
+                            <img id="previewImg" class="img-fluid rounded" style="max-height: 200px;">
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            {{ form.submit(class="btn btn-primary flex-grow-1") }}
+                            <a href="{{ url_for('ads') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Odustani
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Preview slike prije uploada
+    const imageInput = document.querySelector('input[type="file"][name="image"]');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}
