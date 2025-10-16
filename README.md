@@ -9,8 +9,13 @@ Projekt je razvijen kao dio kolegija **Programiranje za Web (SIT UNIZD)**.
 - Dodavanje novog oglasa putem forme
 - **Uređivanje postojećih oglasa**
 - **Brisanje oglasa**
+- **Markdown editor (EasyMDE)** za formatiranje opisa
+  - Live preview Markdown-a
+  - Toolbar s najčešće korištenim opcijama
+  - Podrška za bold, italic, naslove, liste, linkove, citati
 - Polja: naslov, opis, prodavač, broj mobitela, cijena, kategorija, lokacija, slika
 - Validacija unosa (obavezna polja, duljina, email/telefon format…)
+- **Sanitizacija HTML-a** za sigurnost protiv XSS napada
 - CSRF zaštita (Flask-WTF)
 - Flash poruke za obavijesti o uspjehu/neuspjehu
 - PRG (Post → Redirect → Get) obrazac
@@ -63,6 +68,52 @@ Projekt je razvijen kao dio kolegija **Programiranje za Web (SIT UNIZD)**.
    ```
    http://127.0.0.1:5000/
    ```
+
+---
+
+## ✍️ Markdown podrška
+
+Aplikacija podržava **Markdown formatiranje** u opisu oglasa! Korisnici mogu koristiti:
+
+### Dostupne Markdown značajke:
+- **Podebljano**: `**tekst**` ili `__tekst__`
+- *Kurziv*: `*tekst*` ili `_tekst_`
+- Naslovi: `# H1`, `## H2`, `### H3`, itd.
+- Liste:
+  ```markdown
+  - Stavka 1
+  - Stavka 2
+  
+  1. Numerirana stavka
+  2. Druga stavka
+  ```
+- Linkovi: `[tekst](https://url.com)`
+- Citati: `> Ovo je citat`
+- Kod: `` `inline kod` `` ili blokovi koda s ` ``` `
+
+### Sigurnost:
+- Svi HTML tagovi su **sanitizirani** pomoću `bleach` biblioteke
+- Dozvoljeni samo sigurni tagovi (`<p>`, `<strong>`, `<em>`, `<ul>`, `<li>`, itd.)
+- Zaštita od XSS napada
+
+### EasyMDE Editor:
+- Live preview Markdown formatiranja
+- Toolbar s quick buttons
+- Side-by-side prikaz (Markdown | Preview)
+- Fullscreen mod
+- Brojanje riječi i linija
+
+Primjer:
+   ## Odličan laptop!
+   
+   **Specs:**
+   - Intel i7 procesor
+   - 16GB RAM
+   - 512GB SSD
+   
+   *U izvrsnom stanju!* Cijena nije fiksna.
+   
+   [Više informacija](https://example.com)
 
 ---
 

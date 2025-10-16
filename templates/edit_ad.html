@@ -3,6 +3,16 @@
 
 {% block title %}Uredi oglas - UNIZD Oglasnik{% endblock %}
 
+{% block extra_css %}
+<!-- EasyMDE CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+<style>
+    .EasyMDEContainer .CodeMirror {
+        min-height: 200px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -76,7 +86,32 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- EasyMDE JS -->
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
 <script>
+    // Inicijaliziraj EasyMDE Markdown editor
+    const descriptionTextarea = document.querySelector('textarea[name="description"]');
+    if (descriptionTextarea) {
+        const easyMDE = new EasyMDE({
+            element: descriptionTextarea,
+            placeholder: "Detaljno opišite vaš proizvod... Možete koristiti Markdown formatiranje!",
+            spellChecker: false,
+            toolbar: [
+                "bold", "italic", "heading", "|",
+                "unordered-list", "ordered-list", "|",
+                "link", "quote", "|",
+                "preview", "side-by-side", "fullscreen", "|",
+                "guide"
+            ],
+            status: ["lines", "words", "cursor"],
+            promptURLs: true,
+            renderingConfig: {
+                singleLineBreaks: true,
+                codeSyntaxHighlighting: false
+            }
+        });
+    }
+
     // Preview nove slike prije uploada
     const imageInput = document.querySelector('input[type="file"][name="image"]');
     if (imageInput) {

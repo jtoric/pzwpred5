@@ -1,9 +1,11 @@
 from bson import ObjectId
-from flask import Flask, Response, render_template, request, flash, redirect, url_for, send_file
+from flask import Flask, Response, render_template, request, flash, redirect, url_for
 from flask_bootstrap import Bootstrap5
 from datetime import datetime
 from pymongo import MongoClient
 import gridfs
+import markdown2
+import bleach
 
 from forms import AdForm
 
@@ -18,10 +20,34 @@ bootstrap = Bootstrap5(app)
 
 app.config['SECRET_KEY'] = "jako-jak-random-key"
 
+# Markdown konfiguracija
+ALLOWED_TAGS = [
+    'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'a', 'hr'
+]
+ALLOWED_ATTRIBUTES = {
+    'a': ['href', 'title'],
+    'code': ['class']
+}
+
+def markdown_to_html(text):
+    """Pretvara Markdown u sanitizirani HTML"""
+    if not text:
+        return ""
+    # Pretvori Markdown u HTML
+    html = markdown2.markdown(text, extras=['fenced-code-blocks', 'tables', 'break-on-newline'])
+    # Sanitiziraj HTML da spriječiš XSS
+    clean_html = bleach.clean(html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, strip=True)
+    return clean_html
+
+# Registriraj Jinja2 filter
+@app.template_filter('markdown')
+def markdown_filter(text):
+    return markdown_to_html(text)
+
 @app.route('/')
 def index():
     """Početna stranica"""
-
     recent_ads = ads_collection.find().sort('created_at', -1).limit(6)
 
     return render_template('index.html', ads=recent_ads)
@@ -30,9 +56,7 @@ def index():
 def ads():
     """Lista svih oglasa"""
     category = request.args.get('category', '')
-    
     if category:
-
         ads = ads_collection.find({'category': category}).sort('created_at', -1)
     else:
         ads = ads_collection.find().sort('created_at', -1)
@@ -61,7 +85,6 @@ def new_ad():
         # Upload slike u GridFS
         if form.image.data:
             file = form.image.data
-            # Spremi sliku u GridFS
             image_id = fs.put(
                 file.read(),
                 filename=file.filename,
@@ -69,8 +92,8 @@ def new_ad():
             )
             new_ad['image_id'] = image_id
         
+        # Spremi oglas u MongoDB
         ads_collection.insert_one(new_ad)
-
     
         flash('Oglas je uspješno kreiran!', 'success')
         return redirect(url_for('ads'))
@@ -129,6 +152,7 @@ def edit_ad(ad_id):
             # Zadrži postojeću sliku
             updated_ad['image_id'] = ad.get('image_id')
         
+        # Ažuriraj oglas u MongoDB
         ads_collection.update_one(
             {'_id': ObjectId(ad_id)},
             {'$set': updated_ad}

@@ -42,7 +42,7 @@
 
                     <div class="mb-4">
                         <h5>Opis:</h5>
-                        <p class="card-text">{{ ad.description|replace('\n', '<br>')|safe }}</p>
+                        <div class="card-text">{{ ad.description|markdown|safe }}</div>
                     </div>
 
                     <div class="mb-4">
