@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form, render_field %}
+
+{% block title %}Uredi oglas - UNIZD Oglasnik{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">
+                        <i class="bi bi-pencil-square text-primary"></i>
+                        Uredi oglas
+                    </h2>
+                    <p class="text-center text-muted mb-4">
+                        Ažurirajte informacije o vašem oglasu
+                    </p>
+                    
+                    <!-- Trenutna slika -->
+                    {% if ad.image %}
+                    <div class="mb-3">
+                        <label class="form-label">Trenutna slika:</label>
+                        <div class="text-center">
+                            <img src="{{ url_for('static', filename='uploads/' + ad.image) }}" 
+                                 class="img-fluid rounded" 
+                                 style="max-height: 200px;">
+                        </div>
+                        <small class="text-muted">Ostavite polje prazno ako želite zadržati trenutnu sliku</small>
+                    </div>
+                    {% endif %}
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        {{ render_field(form.title) }}
+                        {{ render_field(form.description) }}
+                        {{ render_field(form.seller) }}
+                        {{ render_field(form.cellNo) }}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ render_field(form.price) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ render_field(form.category) }}
+                            </div>
+                        </div>
+                        
+                        {{ render_field(form.location) }}
+                        
+                        <!-- Nova slika -->
+                        <div class="mb-3">
+                            {{ render_field(form.image) }}
+                            <small class="text-muted">Uploadajte novu sliku samo ako želite zamijeniti postojeću</small>
+                        </div>
+                        
+                        <!-- Preview nove slike -->
+                        <div id="imagePreview" class="mb-3" style="display: none;">
+                            <label class="form-label">Pregled nove slike:</label>
+                            <img id="previewImg" class="img-fluid rounded" style="max-height: 200px;">
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            {{ form.submit(class="btn btn-primary flex-grow-1") }}
+                            <a href="{{ url_for('ad_detail', ad_id=ad._id) }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Odustani
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Preview nove slike prije uploada
+    const imageInput = document.querySelector('input[type="file"][name="image"]');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}
+

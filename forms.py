@@ -78,3 +78,7 @@ class AdForm(FlaskForm):
     )
     
     submit = SubmitField('Objavi oglas')
+
+class EditAdForm(AdForm):
+    """Forma za uređivanje oglasa (naslijeđuje AdForm)"""
+    submit = SubmitField('Spremi promjene')
