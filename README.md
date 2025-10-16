@@ -7,18 +7,31 @@ Projekt je razvijen kao dio kolegija **Programiranje za Web (SIT UNIZD)**.
 
 ## ✨ Funkcionalnosti
 - Dodavanje novog oglasa putem forme
+- **Uređivanje postojećih oglasa**
+- **Brisanje oglasa**
 - Polja: naslov, opis, prodavač, broj mobitela, cijena, kategorija, lokacija, slika
 - Validacija unosa (obavezna polja, duljina, email/telefon format…)
 - CSRF zaštita (Flask-WTF)
 - Flash poruke za obavijesti o uspjehu/neuspjehu
 - PRG (Post → Redirect → Get) obrazac
 - Bootstrap 5 za izgled i layout
-- Spremanje oglasa u **JSON datoteku** (umjesto baze podataka)
+- Spremanje oglasa u **MongoDB bazu podataka**
+- Spremanje slika u **GridFS** (MongoDB datotečni sustav)
 - Prikaz oglasa u listi (Bootstrap kartice)
+- Filtriranje po kategorijama
 
 ---
 
 ## ⚙️ Instalacija i pokretanje
+
+### Preduslovi
+- Python 3.8+
+- MongoDB (instaliraj lokalno ili koristi Docker)
+
+### MongoDB instalacija
+- **Windows/macOS/Linux**: [MongoDB Community Server](https://www.mongodb.com/try/download/community)
+
+### Koraci instalacije
 
 1. Kloniraj repozitorij:
    ```bash
@@ -35,18 +48,24 @@ Projekt je razvijen kao dio kolegija **Programiranje za Web (SIT UNIZD)**.
    pip install -r requirements.txt
    ```
 
-3. Pokreni aplikaciju:
+3. Osiguraj da MongoDB radi:
    ```bash
-   flask run
+   # Provjeri da li MongoDB radi na localhost:27017
+   # Ako ne radi, pokreni MongoDB server
    ```
 
-4. Otvori u browseru:
+4. Pokreni aplikaciju:
+   ```bash
+   python app.py
+   ```
+
+5. Otvori u browseru:
    ```
    http://127.0.0.1:5000/
    ```
 
-
 ---
+
 
 ## 👨‍🏫 Autor
 mag.ing. Josip Torić  

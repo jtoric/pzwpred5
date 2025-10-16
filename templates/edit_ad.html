@@ -18,11 +18,11 @@
                     </p>
                     
                     <!-- Trenutna slika -->
-                    {% if ad.image %}
+                    {% if ad.image_id %}
                     <div class="mb-3">
                         <label class="form-label">Trenutna slika:</label>
                         <div class="text-center">
-                            <img src="{{ url_for('static', filename='uploads/' + ad.image) }}" 
+                            <img src="{{ url_for('get_image', image_id=ad.image_id) }}" 
                                  class="img-fluid rounded" 
                                  style="max-height: 200px;">
                         </div>

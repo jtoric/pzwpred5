@@ -1,10 +1,9 @@
 from bson import ObjectId
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, Response, render_template, request, flash, redirect, url_for, send_file
 from flask_bootstrap import Bootstrap5
 from datetime import datetime
-import json
-import os
 from pymongo import MongoClient
+import gridfs
 
 from forms import AdForm
 
@@ -13,36 +12,11 @@ app = Flask(__name__)
 client = MongoClient('mongodb://localhost:27017/')
 db = client['pzw']
 ads_collection = db['ads']
+fs = gridfs.GridFS(db)
 
 bootstrap = Bootstrap5(app)
 
-# JSON datoteke za pohranu podataka
-ADS_FILE = 'data/ads.json'
-
-UPLOAD_FOLDER = 'static/uploads'
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = "jako-jak-random-key"
-
-def load_data(filename):
-    try:
-        with open(filename, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return []
-
-def save_data(data, filename):
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-def init_data():
-    # Inicijalizira prazne datoteke ako ne postoje
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    os.makedirs('data', exist_ok=True)
-    if not os.path.exists(ADS_FILE):
-        save_data([], ADS_FILE)
-
-init_data()
 
 @app.route('/')
 def index():
@@ -80,16 +54,20 @@ def new_ad():
             'price': float(form.price.data),
             'category': form.category.data,
             'location': form.location.data or '',
-            'image': None,
+            'image_id': None,
             'created_at': datetime.now().isoformat()
         }
         
-        # Upload slike oglasa
+        # Upload slike u GridFS
         if form.image.data:
             file = form.image.data
-            filename = f"{str(ObjectId())}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{file.filename}"
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            new_ad['image'] = filename
+            # Spremi sliku u GridFS
+            image_id = fs.put(
+                file.read(),
+                filename=file.filename,
+                content_type=file.content_type
+            )
+            new_ad['image_id'] = image_id
         
         ads_collection.insert_one(new_ad)
 
@@ -135,20 +113,21 @@ def edit_ad(ad_id):
         
         # Ako je uploadana nova slika
         if form.image.data:
-            # Obriši staru sliku
-            if ad.get('image'):
-                old_image_path = os.path.join(app.config['UPLOAD_FOLDER'], ad['image'])
-                if os.path.exists(old_image_path):
-                    os.remove(old_image_path)
+            # Obriši staru sliku iz GridFS
+            if ad.get('image_id'):
+                fs.delete(ad['image_id'])
             
-            # Spremi novu sliku
+            # Spremi novu sliku u GridFS
             file = form.image.data
-            filename = f"{str(ObjectId())}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{file.filename}"
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            updated_ad['image'] = filename
+            image_id = fs.put(
+                file.read(),
+                filename=file.filename,
+                content_type=file.content_type
+            )
+            updated_ad['image_id'] = image_id
         else:
             # Zadrži postojeću sliku
-            updated_ad['image'] = ad.get('image')
+            updated_ad['image_id'] = ad.get('image_id')
         
         ads_collection.update_one(
             {'_id': ObjectId(ad_id)},
@@ -170,6 +149,16 @@ def edit_ad(ad_id):
     
     return render_template('edit_ad.html', form=form, ad=ad)
 
+@app.route('/image/<image_id>')
+def get_image(image_id):
+    """Serviranje slike iz GridFS"""
+    try:
+        image = fs.get(ObjectId(image_id))
+        return Response(image.read(), mimetype=image.content_type)
+    except:
+        # Ako slika ne postoji, vrati placeholder
+        return '', 404
+
 @app.route('/ads/<ad_id>/delete', methods=['POST'])
 def delete_ad(ad_id):
     """Brisanje oglasa"""
@@ -180,11 +169,12 @@ def delete_ad(ad_id):
         flash('Oglas nije pronađen!', 'danger')
         return redirect(url_for('ads'))
     
-    # Obriši sliku ako postoji
-    if ad['image']:
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], ad['image'])
-        if os.path.exists(image_path):
-            os.remove(image_path)
+    # Obriši sliku iz GridFS ako postoji
+    if ad.get('image_id'):
+        try:
+            fs.delete(ad['image_id'])
+        except:
+            pass  # Ako slika ne postoji, nastavi
     
     # Obriši oglas
     ads_collection.delete_one({'_id': ObjectId(ad_id)})

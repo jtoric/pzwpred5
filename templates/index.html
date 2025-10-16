@@ -82,8 +82,8 @@
             {% for ad in ads %}
             <div class="col-lg-4 col-md-6">
                 <div class="card card-hover h-100">
-                    {% if ad.image %}
-                    <img src="{{ url_for('static', filename='uploads/' + ad.image) }}" class="card-img-top ad-image"
+                    {% if ad.image_id %}
+                    <img src="{{ url_for('get_image', image_id=ad.image_id) }}" class="card-img-top ad-image"
                         alt="{{ ad.title }}">
                     {% else %}
                     <div class="card-img-top ad-image bg-light d-flex align-items-center justify-content-center">

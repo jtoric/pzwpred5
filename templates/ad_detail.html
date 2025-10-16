@@ -7,8 +7,8 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card">
-                {% if ad.image %}
-                <img src="{{ url_for('static', filename='uploads/' + ad.image) }}" class="card-img-top"
+                {% if ad.image_id %}
+                <img src="{{ url_for('get_image', image_id=ad.image_id) }}" class="card-img-top"
                     alt="{{ ad.title }}" style="height: 400px; object-fit: cover;">
                 {% else %}
                 <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
