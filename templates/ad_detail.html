@@ -69,7 +69,7 @@
                                 <a href="{{ url_for('ads') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left"></i> Povratak na oglase
                                 </a>
-                                <form method="POST" action="{{ url_for('delete_ad', ad_id=ad.id) }}" class="d-inline">
+                                <form method="POST" action="{{ url_for('delete_ad', ad_id=ad._id) }}" class="d-inline">
                                     <button type="submit" class="btn btn-outline-danger"
                                         onclick="return confirm('Jeste li sigurni da želite obrisati ovaj oglas?')">
                                         <i class="bi bi-trash"></i> Obriši

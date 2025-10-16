@@ -1,13 +1,19 @@
+from bson import ObjectId
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_bootstrap import Bootstrap5
 import uuid
 from datetime import datetime
 import json
 import os
+from pymongo import MongoClient
 
 from forms import AdForm
 
 app = Flask(__name__)
+
+client = MongoClient('mongodb://localhost:27017/')
+db = client['pzwpred2']
+ads_collection = db['ads']
 
 bootstrap = Bootstrap5(app)
 
@@ -42,16 +48,17 @@ init_data()
 @app.route('/')
 def index():
     """Početna stranica"""
-    ads = load_data(ADS_FILE)
+    # ads = load_data(ADS_FILE)
     # Prikaži samo najnovijih 6 oglasa
-    recent_ads = sorted(ads, key=lambda x: x['created_at'], reverse=True)[:6]   
+    # recent_ads = sorted(ads, key=lambda x: x['created_at'], reverse=True)[:6]   
+    recent_ads = ads_collection.find().sort('created_at', -1).limit(6)
 
     return render_template('index.html', ads=recent_ads)
 
 @app.route('/ads')
 def ads():
     """Lista svih oglasa"""
-    ads = load_data(ADS_FILE)
+    # ads = load_data(ADS_FILE)
     category = request.args.get('category', '')
     
     if category:
@@ -61,10 +68,14 @@ def ads():
         #   if ad['category']==category:
         #       filtered_ads.append(ad)
         # ads = filtered_ads
-        ads = [ad for ad in ads if ad['category'] == category]
-    
+        #ads = [ad for ad in ads if ad['category'] == category]
+        ads = ads_collection.find({'category': category}).sort('created_at', -1)
+    else:
+        ads = ads_collection.find().sort('created_at', -1)
+   
     # Sortiranje po datumu kreiranja (najnoviji prvi)
-    ads = sorted(ads, key=lambda x: x['created_at'], reverse=True)
+    #ads = sorted(ads, key=lambda x: x['created_at'], reverse=True)
+
     
     return render_template('ads.html', ads=ads, selected_category=category)
 
@@ -76,7 +87,6 @@ def new_ad():
     
     if form.validate_on_submit():
         new_ad = {
-            'id': str(uuid.uuid4()),
             'title': form.title.data,
             'description': form.description.data,
             'seller': form.seller.data,
@@ -91,14 +101,16 @@ def new_ad():
         # Upload slike oglasa
         if form.image.data:
             file = form.image.data
-            filename = f"{new_ad['id']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{file.filename}"
+            filename = f"{str(ObjectId())}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{file.filename}"
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             new_ad['image'] = filename
         
-        ads = load_data(ADS_FILE)
-        ads.append(new_ad)
-        save_data(ads, ADS_FILE)
-        
+        # ads = load_data(ADS_FILE)
+        # ads.append(new_ad)
+        # save_data(ads, ADS_FILE)
+        ads_collection.insert_one(new_ad)
+
+    
         flash('Oglas je uspješno kreiran!', 'success')
         return redirect(url_for('ads'))
     
@@ -107,7 +119,8 @@ def new_ad():
 @app.route('/ads/<ad_id>')
 def ad_detail(ad_id):
     """Detalji oglasa"""
-    ads = load_data(ADS_FILE)
+    # ads = load_data(ADS_FILE)
+    ad = ads_collection.find_one({'_id': ObjectId(ad_id)})
 
     # Next vraća samo prvu vrijednost generatora
     # Generator možemo napisati i sa for petljom
@@ -116,7 +129,7 @@ def ad_detail(ad_id):
     #       if item['id'] == ad_id:
     #           ad = item
     #           break
-    ad = next((ad for ad in ads if ad['id'] == ad_id), None)
+    # ad = next((ad for ad in ads if ad['id'] == ad_id), None)
     
     if not ad:
         flash('Oglas nije pronađen!', 'danger')
@@ -128,8 +141,9 @@ def ad_detail(ad_id):
 def delete_ad(ad_id):
     """Brisanje oglasa"""
 
-    ads = load_data(ADS_FILE)
-    ad = next((ad for ad in ads if ad['id'] == ad_id), None)
+    # ads = load_data(ADS_FILE)
+    # ad = next((ad for ad in ads if ad['id'] == ad_id), None)
+    ad = ads_collection.find_one({'_id': ObjectId(ad_id)})
     
     if not ad:
         flash('Oglas nije pronađen!', 'danger')
@@ -142,8 +156,9 @@ def delete_ad(ad_id):
             os.remove(image_path)
     
     # Obriši oglas
-    ads = [ad for ad in ads if ad['id'] != ad_id]
-    save_data(ads, ADS_FILE)
+    # ads = [ad for ad in ads if ad['id'] != ad_id]
+    ads_collection.delete_one({'_id': ObjectId(ad_id)})
+    # save_data(ads, ADS_FILE)
     
     flash('Oglas je uspješno obrisan!', 'success')
     return redirect(url_for('ads'))

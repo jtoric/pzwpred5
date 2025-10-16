@@ -95,7 +95,7 @@
                                     <i class="bi bi-calendar"></i> {{ ad.created_at[:10] }}
                                 </small>
                             </div>
-                            <a href="{{ url_for('ad_detail', ad_id=ad.id) }}" class="btn btn-outline-primary btn-sm">
+                            <a href="{{ url_for('ad_detail', ad_id=ad._id) }}" class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-eye"></i> Pogledaj
                             </a>
                         </div>
