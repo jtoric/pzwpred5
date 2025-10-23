@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Zabranjen pristup - UNIZD Oglasnik{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 text-center">
+            <div class="error-page">
+                <!-- 403 ikona -->
+                <div class="error-icon mb-4">
+                    <i class="bi bi-shield-exclamation display-1 text-warning"></i>
+                </div>
+                
+                <!-- Error poruka -->
+                <h1 class="display-4 fw-bold text-warning mb-3">403</h1>
+                <h2 class="h3 mb-4">Zabranjen pristup</h2>
+                <p class="lead text-muted mb-5">
+                    Nemate dozvolu za pristup ovoj stranici. Molimo prijavite se ili kontaktirajte administratora.
+                </p>
+                
+                <!-- Akcije -->
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-house"></i> Početna stranica
+                    </a>
+                    <a href="{{ url_for('ads.ads') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-grid"></i> Svi oglasi
+                    </a>
+                    <button onclick="history.back()" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> Nazad
+                    </button>
+                </div>
+                
+                <!-- Dodatne informacije -->
+                <div class="mt-5">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Možda trebate:</strong>
+                        <ul class="list-unstyled mt-2 mb-0">
+                            <li>• Prijaviti se u sustav</li>
+                            <li>• Imati odgovarajuće dozvole</li>
+                            <li>• Kontaktirati administratora za pomoć</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-icon {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+</style>
+{% endblock %}

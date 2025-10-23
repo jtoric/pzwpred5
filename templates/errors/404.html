@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Stranica nije pronađena - UNIZD Oglasnik{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 text-center">
+            <div class="error-page">
+                <!-- 404 ikona -->
+                <div class="error-icon mb-4">
+                    <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+                </div>
+                
+                <!-- Error poruka -->
+                <h1 class="display-4 fw-bold text-primary mb-3">404</h1>
+                <h2 class="h3 mb-4">Stranica nije pronađena</h2>
+                <p class="lead text-muted mb-5">
+                    Nažalost, stranica koju tražite ne postoji ili je premještena.
+                </p>
+                
+                <!-- Akcije -->
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-house"></i> Početna stranica
+                    </a>
+                    <a href="{{ url_for('ads.ads') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-grid"></i> Svi oglasi
+                    </a>
+                    <button onclick="history.back()" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> Nazad
+                    </button>
+                </div>
+                
+                <!-- Dodatne informacije -->
+                <div class="mt-5">
+                    <small class="text-muted">
+                        Ako mislite da je ovo greška, molimo kontaktirajte administratora.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-icon {
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+</style>
+{% endblock %}

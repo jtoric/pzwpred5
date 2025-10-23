@@ -1,5 +1,5 @@
 from bson import ObjectId
-from flask import render_template, request, flash, redirect, url_for, Response, current_app
+from flask import render_template, request, flash, redirect, url_for, Response, current_app, abort
 from datetime import datetime
 
 from .forms import AdForm, EditAdForm
@@ -89,8 +89,7 @@ def ad_detail(ad_id):
     ad = ads_collection.find_one({'_id': ObjectId(ad_id)})
     
     if not ad:
-        flash('Oglas nije pronađen!', 'danger')
-        return redirect(url_for('ads.ads'))
+        abort(404)
     
     return render_template('ad_detail.html', ad=ad)
 
@@ -102,8 +101,7 @@ def edit_ad(ad_id):
     ad = ads_collection.find_one({'_id': ObjectId(ad_id)})
     
     if not ad:
-        flash('Oglas nije pronađen!', 'danger')
-        return redirect(url_for('ads.ads'))
+        abort(404)
     
     form = EditAdForm()
     
@@ -166,8 +164,8 @@ def get_image(image_id):
         image = fs.get(ObjectId(image_id))
         return Response(image.read(), mimetype=image.content_type)
     except:
-        # Ako slika ne postoji, vrati placeholder
-        return '', 404
+        # Ako slika ne postoji, vrati 404
+        abort(404)
 
 @bp.route('/<ad_id>/delete', methods=['POST'])
 def delete_ad(ad_id):
@@ -177,8 +175,7 @@ def delete_ad(ad_id):
     ad = ads_collection.find_one({'_id': ObjectId(ad_id)})
     
     if not ad:
-        flash('Oglas nije pronađen!', 'danger')
-        return redirect(url_for('ads.ads'))
+        abort(404)
     
     # Obriši sliku iz GridFS ako postoji
     if ad.get('image_id'):

@@ -9,7 +9,7 @@ class AdForm(FlaskForm):
         'Naziv oglasa',
         validators=[
             DataRequired(message='Naziv oglasa je obavezan'),
-            Length(min=5, max=100, message='Naziv mora imati između 5 i 100 znakova')
+            Length(min=1, max=100, message='Naziv mora imati manje od 100 znakova')
         ],
         render_kw={'placeholder': 'Unesite naziv vašeg proizvoda'}
     )

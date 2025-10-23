@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, abort
 from flask_bootstrap import Bootstrap5
 from pymongo import MongoClient
 import gridfs
@@ -34,6 +34,31 @@ def create_app(config_name='development'):
     
     # Registracija Jinja2 filtera
     app.jinja_env.filters['markdown'] = markdown_to_html
+    
+    # Test route za 500 grešku (samo u development modu)
+    if config_name == 'development':
+        @app.route('/test-500')
+        def test_500():
+            raise Exception("Test 500 greška")
+
+     # Test route za 403 grešku (samo u development modu)
+    if config_name == 'development':
+        @app.route('/test-403')
+        def test_403():
+            abort(403)
+    
+    # Error handleri
+    @app.errorhandler(404)
+    def not_found_error(error):
+        return render_template('errors/404.html'), 404
+    
+    @app.errorhandler(500)
+    def internal_error(error):
+        return render_template('errors/500.html'), 500
+    
+    @app.errorhandler(403)
+    def forbidden_error(error):
+        return render_template('errors/403.html'), 403
     
     return app
 

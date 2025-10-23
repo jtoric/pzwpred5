@@ -41,7 +41,7 @@ def generate_ad():
         'category': category,
         'location': fake.city(),
         'seller': fake.name(),
-        'cellNo': fake.phone_number(),
+        'cellNo': fake.phone_number().replace(' ', ''),
         'created_at': created_at,
         'image_id': None  # Bez slika
     }

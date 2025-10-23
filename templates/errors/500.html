@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Server greška - UNIZD Oglasnik{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 text-center">
+            <div class="error-page">
+                <!-- 500 ikona -->
+                <div class="error-icon mb-4">
+                    <i class="bi bi-gear-fill display-1 text-danger"></i>
+                </div>
+                
+                <!-- Error poruka -->
+                <h1 class="display-4 fw-bold text-danger mb-3">500</h1>
+                <h2 class="h3 mb-4">Server greška</h2>
+                <p class="lead text-muted mb-5">
+                    Dogodila se neočekivana greška na serveru. Naš tim je obaviješten i radi na rješavanju problema.
+                </p>
+                
+                <!-- Akcije -->
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-house"></i> Početna stranica
+                    </a>
+                    <button onclick="location.reload()" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-arrow-clockwise"></i> Pokušaj ponovo
+                    </button>
+                    <button onclick="history.back()" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> Nazad
+                    </button>
+                </div>
+                
+                <!-- Dodatne informacije -->
+                <div class="mt-5">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Što možete učiniti:</strong>
+                        <ul class="list-unstyled mt-2 mb-0">
+                            <li>• Pokušajte osvježiti stranicu</li>
+                            <li>• Vratite se na početnu stranicu</li>
+                            <li>• Ako se problem nastavi, kontaktirajte administratora</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-icon {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
