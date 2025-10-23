@@ -14,10 +14,10 @@
             Jednostavno, sigurno i brzo!
         </p>
         <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-            <a href="{{ url_for('ads') }}" class="btn btn-light btn-lg me-md-2">
+            <a href="{{ url_for('ads.ads') }}" class="btn btn-light btn-lg me-md-2">
                 <i class="bi bi-search"></i> Pretraži oglase
             </a>
-            <a href="{{ url_for('new_ad') }}" class="btn btn-outline-light btn-lg">
+            <a href="{{ url_for('ads.new_ad') }}" class="btn btn-outline-light btn-lg">
                 <i class="bi bi-plus-circle"></i> Objavi oglas
             </a>
         </div>
@@ -35,7 +35,7 @@
                         <i class="bi bi-laptop display-4 text-primary mb-3"></i>
                         <h5 class="card-title">Elektronika</h5>
                         <p class="card-text">Računala, mobiteli, audio oprema</p>
-                        <a href="{{ url_for('ads', category='Elektronika') }}" class="btn btn-primary">Pogledaj</a>
+                        <a href="{{ url_for('ads.ads', category='Elektronika') }}" class="btn btn-primary">Pogledaj</a>
                     </div>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                         <i class="bi bi-house display-4 text-success mb-3"></i>
                         <h5 class="card-title">Dom i vrt</h5>
                         <p class="card-text">Namještaj, uređaji, alati</p>
-                        <a href="{{ url_for('ads', category='Dom i vrt') }}" class="btn btn-success">Pogledaj</a>
+                        <a href="{{ url_for('ads.ads', category='Dom i vrt') }}" class="btn btn-success">Pogledaj</a>
                     </div>
                 </div>
             </div>
@@ -55,7 +55,7 @@
                         <i class="bi bi-car-front display-4 text-warning mb-3"></i>
                         <h5 class="card-title">Automobili</h5>
                         <p class="card-text">Vozila, dijelovi, oprema</p>
-                        <a href="{{ url_for('ads', category='Automobili') }}" class="btn btn-warning">Pogledaj</a>
+                        <a href="{{ url_for('ads.ads', category='Automobili') }}" class="btn btn-warning">Pogledaj</a>
                     </div>
                 </div>
             </div>
@@ -65,7 +65,7 @@
                         <i class="bi bi-bag display-4 text-info mb-3"></i>
                         <h5 class="card-title">Odjeća</h5>
                         <p class="card-text">Muška, ženska, dječja odjeća</p>
-                        <a href="{{ url_for('ads', category='Odjeća') }}" class="btn btn-info">Pogledaj</a>
+                        <a href="{{ url_for('ads.ads', category='Odjeća') }}" class="btn btn-info">Pogledaj</a>
                     </div>
                 </div>
             </div>
@@ -109,7 +109,7 @@
                             <span class="badge bg-primary">{{ ad.category }}</span>
                             <small class="text-muted d-block">{{ ad.username }}</small>
                         </div>
-                        <a href="{{ url_for('ad_detail', ad_id=ad._id) }}" class="btn btn-outline-primary mt-3">Pogledaj
+                        <a href="{{ url_for('ads.ad_detail', ad_id=ad._id) }}" class="btn btn-outline-primary mt-3">Pogledaj
                             detalje</a>
                     </div>
                 </div>
@@ -117,7 +117,7 @@
             {% endfor %}
         </div>
         <div class="text-center mt-4">
-            <a href="{{ url_for('ads') }}" class="btn btn-primary btn-lg">
+            <a href="{{ url_for('ads.ads') }}" class="btn btn-primary btn-lg">
                 <i class="bi bi-grid"></i> Pogledaj sve oglase
             </a>
         </div>

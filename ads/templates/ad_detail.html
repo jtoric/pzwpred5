@@ -66,13 +66,13 @@
                         </div>
                         <div>
                             <div class="btn-group">
-                                <a href="{{ url_for('ads') }}" class="btn btn-outline-secondary">
+                                <a href="{{ url_for('ads.ads') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left"></i> Povratak na oglase
                                 </a>
-                                <a href="{{ url_for('edit_ad', ad_id=ad._id) }}" class="btn btn-outline-primary">
+                                <a href="{{ url_for('ads.edit_ad', ad_id=ad._id) }}" class="btn btn-outline-primary">
                                     <i class="bi bi-pencil"></i> Uredi
                                 </a>
-                                <form method="POST" action="{{ url_for('delete_ad', ad_id=ad._id) }}" class="d-inline">
+                                <form method="POST" action="{{ url_for('ads.delete_ad', ad_id=ad._id) }}" class="d-inline">
                                     <button type="submit" class="btn btn-outline-danger"
                                         onclick="return confirm('Jeste li sigurni da želite obrisati ovaj oglas?')">
                                         <i class="bi bi-trash"></i> Obriši
@@ -113,7 +113,7 @@
                     </p>
                     <!-- Ovdje bi se dodali preporučeni oglasi iz iste kategorije -->
                     <div class="text-center">
-                        <a href="{{ url_for('ads', category=ad.category) }}" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ url_for('ads.ads', category=ad.category) }}" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-grid"></i> Pogledaj sve u {{ ad.category }}
                         </a>
                     </div>

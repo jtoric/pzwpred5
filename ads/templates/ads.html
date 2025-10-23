@@ -23,35 +23,35 @@
                         <i class="bi bi-funnel"></i> Filtriraj po kategoriji
                     </h5>
                     <div class="d-flex flex-wrap gap-2">
-                        <a href="{{ url_for('ads') }}"
+                        <a href="{{ url_for('ads.ads') }}"
                             class="btn {% if not selected_category %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             Sve kategorije
                         </a>
-                        <a href="{{ url_for('ads', category='Elektronika') }}"
+                        <a href="{{ url_for('ads.ads', category='Elektronika') }}"
                             class="btn {% if selected_category == 'Elektronika' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-laptop"></i> Elektronika
                         </a>
-                        <a href="{{ url_for('ads', category='Dom i vrt') }}"
+                        <a href="{{ url_for('ads.ads', category='Dom i vrt') }}"
                             class="btn {% if selected_category == 'Dom i vrt' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-house"></i> Dom i vrt
                         </a>
-                        <a href="{{ url_for('ads', category='Automobili') }}"
+                        <a href="{{ url_for('ads.ads', category='Automobili') }}"
                             class="btn {% if selected_category == 'Automobili' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-car-front"></i> Automobili
                         </a>
-                        <a href="{{ url_for('ads', category='Odjeća') }}"
+                        <a href="{{ url_for('ads.ads', category='Odjeća') }}"
                             class="btn {% if selected_category == 'Odjeća' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-bag"></i> Odjeća
                         </a>
-                        <a href="{{ url_for('ads', category='Sport') }}"
+                        <a href="{{ url_for('ads.ads', category='Sport') }}"
                             class="btn {% if selected_category == 'Sport' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-trophy"></i> Sport
                         </a>
-                        <a href="{{ url_for('ads', category='Knjige') }}"
+                        <a href="{{ url_for('ads.ads', category='Knjige') }}"
                             class="btn {% if selected_category == 'Knjige' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-book"></i> Knjige
                         </a>
-                        <a href="{{ url_for('ads', category='Ostalo') }}"
+                        <a href="{{ url_for('ads.ads', category='Ostalo') }}"
                             class="btn {% if selected_category == 'Ostalo' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-three-dots"></i> Ostalo
                         </a>
@@ -96,7 +96,7 @@
                                     <i class="bi bi-calendar"></i> {{ ad.created_at[:10] }}
                                 </small>
                             </div>
-                            <a href="{{ url_for('ad_detail', ad_id=ad._id) }}" class="btn btn-outline-primary btn-sm">
+                            <a href="{{ url_for('ads.ad_detail', ad_id=ad._id) }}" class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-eye"></i> Pogledaj
                             </a>
                         </div>
@@ -117,7 +117,7 @@
                 <p class="text-muted">
                     Budite prvi koji će objaviti oglas u ovoj kategoriji!
                 </p>
-                <a href="{{ url_for('new_ad') }}" class="btn btn-primary">
+                <a href="{{ url_for('ads.new_ad') }}" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Objavi oglas
                 </a>
             </div>

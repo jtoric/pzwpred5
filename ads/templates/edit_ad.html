@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from 'bootstrap5/form.html' import render_form, render_field %}
 
-{% block title %}Novi oglas - UNIZD Oglasnik{% endblock %}
+{% block title %}Uredi oglas - UNIZD Oglasnik{% endblock %}
 
 {% block extra_css %}
 <!-- EasyMDE CSS -->
@@ -20,14 +20,27 @@
             <div class="card shadow">
                 <div class="card-body p-5">
                     <h2 class="text-center mb-4">
-                        <i class="bi bi-plus-circle text-primary"></i>
-                        Novi oglas
+                        <i class="bi bi-pencil-square text-primary"></i>
+                        Uredi oglas
                     </h2>
                     <p class="text-center text-muted mb-4">
-                        Objavite svoj oglas i počnite prodavati
+                        Ažurirajte informacije o vašem oglasu
                     </p>
                     
-                    <form method="POST" enctype="multipart/form-data">
+                    <!-- Trenutna slika -->
+                    {% if ad.image_id %}
+                    <div class="mb-3">
+                        <label class="form-label">Trenutna slika:</label>
+                        <div class="text-center">
+                            <img src="{{ url_for('get_image', image_id=ad.image_id) }}" 
+                                 class="img-fluid rounded" 
+                                 style="max-height: 200px;">
+                        </div>
+                        <small class="text-muted">Ostavite polje prazno ako želite zadržati trenutnu sliku</small>
+                    </div>
+                    {% endif %}
+                    
+                    <form method="POST" enctype="multipart/form-data" novalidate>
                         {{ form.hidden_tag() }}
                         
                         {{ render_field(form.title) }}
@@ -45,17 +58,22 @@
                         </div>
                         
                         {{ render_field(form.location) }}
-                        {{ render_field(form.image) }}
                         
-                        <!-- Preview slike -->
+                        <!-- Nova slika -->
+                        <div class="mb-3">
+                            {{ render_field(form.image) }}
+                            <small class="text-muted">Uploadajte novu sliku samo ako želite zamijeniti postojeću</small>
+                        </div>
+                        
+                        <!-- Preview nove slike -->
                         <div id="imagePreview" class="mb-3" style="display: none;">
-                            <label class="form-label">Pregled slike:</label>
+                            <label class="form-label">Pregled nove slike:</label>
                             <img id="previewImg" class="img-fluid rounded" style="max-height: 200px;">
                         </div>
                         
                         <div class="d-flex gap-2">
                             {{ form.submit(class="btn btn-primary flex-grow-1") }}
-                            <a href="{{ url_for('ads') }}" class="btn btn-outline-secondary">
+                            <a href="{{ url_for('ads.ad_detail', ad_id=ad._id) }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left"></i> Odustani
                             </a>
                         </div>
@@ -94,7 +112,7 @@
         });
     }
 
-    // Preview slike prije uploada
+    // Preview nove slike prije uploada
     const imageInput = document.querySelector('input[type="file"][name="image"]');
     if (imageInput) {
         imageInput.addEventListener('change', function(e) {
@@ -116,3 +134,4 @@
     }
 </script>
 {% endblock %}
+
