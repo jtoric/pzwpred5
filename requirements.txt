@@ -12,3 +12,4 @@ email-validator==2.1.0
 pymongo==4.6.0
 markdown2==2.4.12
 bleach==6.1.0
+faker==19.6.2

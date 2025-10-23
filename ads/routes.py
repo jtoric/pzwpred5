@@ -4,18 +4,36 @@ from datetime import datetime
 
 from .forms import AdForm, EditAdForm
 from . import bp
+from ..utils import get_pagination_info, get_pagination_range
 
 @bp.route('/')
 def ads():
-    """Lista svih oglasa"""
+    """Lista svih oglasa s paginacijom"""
     ads_collection = current_app.config['ADS_COLLECTION']
     category = request.args.get('category', '')
-    if category:
-        ads = ads_collection.find({'category': category}).sort('created_at', -1)
-    else:
-        ads = ads_collection.find().sort('created_at', -1)
+    page = int(request.args.get('page', 1))
+    per_page = 12  # 3x4 grid
     
-    return render_template('ads.html', ads=ads, selected_category=category)
+    # Izgradi query
+    query = {'category': category} if category else {}
+    
+    # Izračunaj ukupan broj oglasa
+    total = ads_collection.count_documents(query)
+    
+    # Dohvati oglase s paginacijom
+    skip = (page - 1) * per_page
+    ads = ads_collection.find(query).sort('created_at', -1).skip(skip).limit(per_page)
+    
+    # Generiraj paginacijske podatke
+    pagination = get_pagination_info(page, per_page, total)
+    pagination['pages'] = get_pagination_range(page, pagination['total_pages'])
+
+    print(pagination)
+    
+    return render_template('ads.html', 
+                         ads=ads, 
+                         selected_category=category,
+                         pagination=pagination)
 
 @bp.route('/new', methods=['GET', 'POST'])
 def new_ad():
@@ -34,7 +52,7 @@ def new_ad():
             'category': form.category.data,
             'location': form.location.data or '',
             'image_id': None,
-            'created_at': datetime.now().isoformat()
+            'created_at': datetime.now()
         }
         
         # Upload slike u GridFS

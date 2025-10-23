@@ -120,6 +120,9 @@
             <a href="{{ url_for('ads.ads') }}" class="btn btn-primary btn-lg">
                 <i class="bi bi-grid"></i> Pogledaj sve oglase
             </a>
+            <p class="text-muted mt-2">
+                <small>Prikazano {{ total_ads if total_ads < 6 else 6 }} od ukupno {{ total_ads }} oglasa</small>
+            </p>
         </div>
     </div>
 </section>
