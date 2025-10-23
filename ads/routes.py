@@ -8,14 +8,23 @@ from ..utils import get_pagination_info, get_pagination_range
 
 @bp.route('/')
 def ads():
-    """Lista svih oglasa s paginacijom"""
+    """Lista svih oglasa s paginacijom i pretragom"""
     ads_collection = current_app.config['ADS_COLLECTION']
     category = request.args.get('category', '')
+    search = request.args.get('search', '').strip()
     page = int(request.args.get('page', 1))
     per_page = 12  # 3x4 grid
     
     # Izgradi query
-    query = {'category': category} if category else {}
+    query = {}
+    
+    # Dodaj kategoriju filter
+    if category:
+        query['category'] = category
+    
+    # Dodaj search filter
+    if search:
+        query['title'] = {'$regex': search, '$options': 'i'}  # Case-insensitive search
     
     # Izračunaj ukupan broj oglasa
     total = ads_collection.count_documents(query)
