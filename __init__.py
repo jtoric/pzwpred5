@@ -1,11 +1,14 @@
 from flask import Flask, render_template, abort
 from flask_bootstrap import Bootstrap5
+from flask_login import LoginManager
 from pymongo import MongoClient
 import gridfs
 from .main import bp as main_bp
 from .ads import bp as ads_bp
+from .auth import bp as auth_bp
 from .ads.routes import get_image
 from .utils import markdown_to_html
+from .auth.models import User
 
 def create_app(config_name='development'):
     """App Factory pattern za kreiranje Flask aplikacije"""
@@ -17,16 +20,29 @@ def create_app(config_name='development'):
     # Inicijalizacija ekstenzija
     bootstrap = Bootstrap5(app)
     
+    # Inicijalizacija Flask-Login
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'Molimo prijavite se za pristup ovoj stranici.'
+    login_manager.login_message_category = 'info'
+    
+    # User loader callback za Flask-Login
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.get_by_id(user_id)
+    
     # MongoDB konekcija
     client = MongoClient('mongodb://localhost:27017/')
     db = client['pzw']
     app.config['DB'] = db
     app.config['ADS_COLLECTION'] = db['ads']
+    app.config['USERS_COLLECTION'] = db['users']
     app.config['GRIDFS'] = gridfs.GridFS(db)
     
     # Registracija blueprint-a
     app.register_blueprint(main_bp)
-    
+    app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(ads_bp, url_prefix='/ads')
     
     # Dodaj route za slike na root level (bez /ads/ prefiksa)

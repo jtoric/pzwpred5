@@ -2,6 +2,8 @@ from bson import ObjectId
 from flask import render_template, request, flash, redirect, url_for, Response, current_app, abort
 from datetime import datetime
 
+from flask_login import current_user, login_required
+
 from .forms import AdForm, EditAdForm
 from . import bp
 from ..utils import get_pagination_info, get_pagination_range
@@ -45,6 +47,7 @@ def ads():
                          pagination=pagination)
 
 @bp.route('/new', methods=['GET', 'POST'])
+@login_required
 def new_ad():
     """Kreiranje novog oglasa"""
     form = AdForm()
@@ -55,7 +58,7 @@ def new_ad():
         new_ad = {
             'title': form.title.data,
             'description': form.description.data,
-            'seller': form.seller.data,
+            'seller': current_user.username,
             'cellNo': form.cellNo.data,
             'price': float(form.price.data),
             'category': form.category.data,
@@ -94,6 +97,7 @@ def ad_detail(ad_id):
     return render_template('ad_detail.html', ad=ad)
 
 @bp.route('/<ad_id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_ad(ad_id):
     """Uređivanje oglasa"""
     ads_collection = current_app.config['ADS_COLLECTION']
@@ -109,7 +113,7 @@ def edit_ad(ad_id):
         updated_ad = {
             'title': form.title.data,
             'description': form.description.data,
-            'seller': form.seller.data,
+            'seller': current_user.username,
             'cellNo': form.cellNo.data,
             'price': float(form.price.data),
             'category': form.category.data,
@@ -168,6 +172,7 @@ def get_image(image_id):
         abort(404)
 
 @bp.route('/<ad_id>/delete', methods=['POST'])
+@login_required
 def delete_ad(ad_id):
     """Brisanje oglasa"""
     ads_collection = current_app.config['ADS_COLLECTION']
