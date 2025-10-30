@@ -1,9 +1,10 @@
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from . import bp
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, ProfileForm
 from .models import User
 from .email import send_verification_email
+from flask import current_app
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -22,7 +23,7 @@ def login():
                 flash('Molimo verificirajte svoju email adresu prije prijave. Provjerite svoju email poštu.', 'warning')
                 return redirect(url_for('auth.login'))
             
-            login_user(user, remember=True)
+            login_user(user, remember=form.remember_me.data)
             flash(f'Dobrodošli, {user.username}!', 'success')
             
             # Preusmjeravanje na stranicu gdje je korisnik želio ići
@@ -70,6 +71,46 @@ def logout():
     flash(f'Odjavljeni ste, {username}.', 'info')
     return redirect(url_for('main.index'))
 
+@bp.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    """Prikaz i uređivanje korisničkog profila"""
+    form = ProfileForm()
+    fs = current_app.config['GRIDFS']
+
+    if form.validate_on_submit():
+        profile_image_id = current_user.profile_image_id
+        if form.profile_image.data:
+            # Obriši staru sliku ako postoji
+            if profile_image_id:
+                try:
+                    fs.delete(profile_image_id)
+                except Exception:
+                    pass
+            # Spremi novu sliku
+            file = form.profile_image.data
+            profile_image_id = fs.put(
+                file.read(),
+                filename=file.filename,
+                content_type=file.content_type
+            )
+        # Ažuriraj profil
+        current_user.update_profile(
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            phone=form.phone.data,
+            profile_image_id=profile_image_id
+        )
+        flash('Profil je ažuriran.', 'success')
+        return redirect(url_for('auth.profile'))
+
+    if request.method == 'GET':
+        form.first_name.data = current_user.first_name
+        form.last_name.data = current_user.last_name
+        form.phone.data = current_user.phone
+
+    image_url = url_for('get_image', image_id=str(current_user.profile_image_id)) if current_user.profile_image_id else None
+    return render_template('profile.html', form=form, image_url=image_url)
 @bp.route('/verify-email/<token>')
 def verify_email(token):
     """Verifikacija email adrese koristeći token"""

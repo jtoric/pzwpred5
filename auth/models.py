@@ -14,6 +14,11 @@ class User(UserMixin):
         self.email = user_data.get('email', '')
         self.password_hash = user_data['password_hash']
         self.email_verified = user_data.get('email_verified', False)
+        # Profil podaci
+        self.first_name = user_data.get('first_name', '')
+        self.last_name = user_data.get('last_name', '')
+        self.phone = user_data.get('phone', '')
+        self.profile_image_id = user_data.get('profile_image_id')
     
     @staticmethod
     def _get_collection():
@@ -74,7 +79,11 @@ class User(UserMixin):
             'username': username,
             'email': email,
             'password_hash': password_hash,
-            'email_verified': False
+            'email_verified': False,
+            'first_name': '',
+            'last_name': '',
+            'phone': '',
+            'profile_image_id': None
         }
         
         result = users_collection.insert_one(user_data)
@@ -117,6 +126,24 @@ class User(UserMixin):
         updated_user_data = users_collection.find_one({'_id': user_data['_id']})
         return User(updated_user_data), None
     
+    def update_profile(self, first_name: str, last_name: str, phone: str, profile_image_id=None):
+        """Ažurira profilne podatke korisnika."""
+        users_collection = User._get_collection()
+        update_fields = {
+            'first_name': first_name or '',
+            'last_name': last_name or '',
+            'phone': phone or ''
+        }
+        if profile_image_id is not None:
+            update_fields['profile_image_id'] = profile_image_id
+        users_collection.update_one({'_id': ObjectId(self.id)}, {'$set': update_fields})
+        # Osvježi lokalna polja
+        self.first_name = update_fields['first_name']
+        self.last_name = update_fields['last_name']
+        self.phone = update_fields['phone']
+        if 'profile_image_id' in update_fields:
+            self.profile_image_id = update_fields['profile_image_id']
+
     def generate_verification_token(self):
         """Generira verifikacijski token koji traje 1 sat"""
         serializer = User._get_serializer()

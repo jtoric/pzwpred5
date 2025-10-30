@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_field %}
+
+{% block title %}Moj profil - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow">
+        <div class="card-body p-5">
+          <h2 class="card-title mb-4"><i class="bi bi-person-circle"></i> Moj profil</h2>
+
+          {% if image_url %}
+          <div class="text-center mb-3">
+            <img src="{{ image_url }}" alt="Profilna slika" class="img-fluid rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+          </div>
+          {% endif %}
+
+          <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+            <div class="row">
+              <div class="col-md-6">{{ render_field(form.first_name) }}</div>
+              <div class="col-md-6">{{ render_field(form.last_name) }}</div>
+            </div>
+
+            {{ render_field(form.phone) }}
+            {{ render_field(form.profile_image) }}
+
+            <div class="d-grid">
+              {{ form.submit(class="btn btn-primary btn-lg") }}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

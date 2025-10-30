@@ -6,24 +6,23 @@ Projekt je razvijen kao dio kolegija **Programiranje za Web (SIT UNIZD)**.
 ---
 
 ## ✨ Funkcionalnosti
+- Autentikacija korisnika (registracija, prijava, odjava) preko Flask-Login
+- Verifikacija email adrese (link s rokom od 1h, `itsdangerous.URLSafeTimedSerializer`)
+- Korisnički profil: ime, prezime, broj mobitela, profilna slika (GridFS)
+- Pregled i uređivanje profila
+- "Moji oglasi" (`/ads/my`) s pretragom, filtriranjem i paginacijom
 - Dodavanje novog oglasa putem forme
-- **Uređivanje postojećih oglasa**
-- **Brisanje oglasa**
-- **Markdown editor (EasyMDE)** za formatiranje opisa
-  - Live preview Markdown-a
-  - Toolbar s najčešće korištenim opcijama
-  - Podrška za bold, italic, naslove, liste, linkove, citati
-- Polja: naslov, opis, prodavač, broj mobitela, cijena, kategorija, lokacija, slika
-- Validacija unosa (obavezna polja, duljina, email/telefon format…)
-- **Sanitizacija HTML-a** za sigurnost protiv XSS napada
-- CSRF zaštita (Flask-WTF)
-- Flash poruke za obavijesti o uspjehu/neuspjehu
-- PRG (Post → Redirect → Get) obrazac
+- **Uređivanje postojećih oglasa** i **Brisanje oglasa** (samo vlasnik)
+- **Markdown editor (EasyMDE)** za opis oglasa
+  - Live preview, toolbar, naslovi/liste/linkovi/citati
+- Polja oglasa: naslov, opis, cijena, kategorija, lokacija, slika
+  - Ime prodavača i broj mobitela automatski se preuzimaju iz profila korisnika
+- Validacija unosa (obavezna polja, duljina…)
+- **Sanitizacija HTML-a** (XSS zaštita) i CSRF zaštita (Flask-WTF)
+- Flash poruke, PRG (Post → Redirect → Get)
 - Bootstrap 5 za izgled i layout
-- Spremanje oglasa u **MongoDB bazu podataka**
-- Spremanje slika u **GridFS** (MongoDB datotečni sustav)
-- Prikaz oglasa u listi (Bootstrap kartice)
-- Filtriranje po kategorijama
+- Spremanje oglasa u **MongoDB**, slike u **GridFS**
+- Filtriranje po kategorijama (radi i u "Moji oglasi")
 
 ---
 
@@ -53,18 +52,43 @@ Projekt je razvijen kao dio kolegija **Programiranje za Web (SIT UNIZD)**.
    pip install -r requirements.txt
    ```
 
-3. Osiguraj da MongoDB radi:
+3. Kopiraj .env primjer i postavi varijable okruženja:
+   ```bash
+   cp .env.example .env   # Linux / macOS
+   # Windows PowerShell
+   Copy-Item .env.example .env
+   ```
+
+   Uredi `.env` i postavi vrijednosti (primjer):
+   ```env
+   # Flask
+   SECRET_KEY=promijeni-ovo-u-sigurni-key
+
+   # MongoDB
+   MONGODB_URI=mongodb://localhost:27017/
+   MONGODB_DB=pzw
+
+   # Email (Flask-Mail)
+   MAIL_SERVER=smtp.gmail.com
+   MAIL_PORT=587
+   MAIL_USE_TLS=True
+   MAIL_USERNAME=tvoj-email@gmail.com
+   MAIL_PASSWORD=tvoja-app-lozinka
+   MAIL_DEFAULT_SENDER=noreply@unizd-oglasnik.hr
+   ```
+
+4. Osiguraj da MongoDB radi:
    ```bash
    # Provjeri da li MongoDB radi na localhost:27017
    # Ako ne radi, pokreni MongoDB server
    ```
 
-4. Pokreni aplikaciju:
+5. Pokreni aplikaciju:
    ```bash
    python app.py
    ```
 
-5. Otvori u browseru:
+6. Otvori u browseru:
    ```
    http://127.0.0.1:5000/
    ```

@@ -12,7 +12,7 @@
                     {% if request.args.get('search') %}
                     Rezultati pretrage za "{{ request.args.get('search') }}"
                     {% else %}
-                    Svi oglasi
+                    {% if my_view %}Moji oglasi{% else %}Svi oglasi{% endif %}
                     {% endif %}
                     {% if selected_category %}
                     - {{ selected_category }}
@@ -28,7 +28,8 @@
                         <h5 class="card-title">
                             <i class="bi bi-search"></i> Pretraži oglase po naslovu
                         </h5>
-                        <form method="GET" class="d-flex gap-2">
+                        {% set endpoint = 'ads.my_ads' if my_view else 'ads.ads' %}
+                        <form method="GET" action="{{ url_for(endpoint) }}" class="d-flex gap-2">
                             <input type="text" name="search" class="form-control" 
                                    placeholder="Unesite naziv oglasa..." 
                                    value="{{ request.args.get('search', '') }}">
@@ -37,7 +38,7 @@
                                 <i class="bi bi-search"></i> Pretraži
                             </button>
                             {% if request.args.get('search') %}
-                            <a href="{{ url_for('ads.ads', category=selected_category) }}" class="btn btn-outline-secondary">
+                            <a href="{{ url_for(endpoint, category=selected_category) }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-x"></i> Očisti
                             </a>
                             {% endif %}
@@ -48,35 +49,35 @@
                         <i class="bi bi-funnel"></i> Filtriraj po kategoriji
                     </h5>
                     <div class="d-flex flex-wrap gap-2">
-                        <a href="{{ url_for('ads.ads', search=request.args.get('search', '')) }}"
+                        <a href="{{ url_for(endpoint, search=request.args.get('search', '')) }}"
                             class="btn {% if not selected_category %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             Sve kategorije
                         </a>
-                        <a href="{{ url_for('ads.ads', category='Elektronika', search=request.args.get('search', '')) }}"
+                        <a href="{{ url_for(endpoint, category='Elektronika', search=request.args.get('search', '')) }}"
                             class="btn {% if selected_category == 'Elektronika' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-laptop"></i> Elektronika
                         </a>
-                        <a href="{{ url_for('ads.ads', category='Dom i vrt', search=request.args.get('search', '')) }}"
+                        <a href="{{ url_for(endpoint, category='Dom i vrt', search=request.args.get('search', '')) }}"
                             class="btn {% if selected_category == 'Dom i vrt' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-house"></i> Dom i vrt
                         </a>
-                        <a href="{{ url_for('ads.ads', category='Automobili', search=request.args.get('search', '')) }}"
+                        <a href="{{ url_for(endpoint, category='Automobili', search=request.args.get('search', '')) }}"
                             class="btn {% if selected_category == 'Automobili' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-car-front"></i> Automobili
                         </a>
-                        <a href="{{ url_for('ads.ads', category='Odjeća', search=request.args.get('search', '')) }}"
+                        <a href="{{ url_for(endpoint, category='Odjeća', search=request.args.get('search', '')) }}"
                             class="btn {% if selected_category == 'Odjeća' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-bag"></i> Odjeća
                         </a>
-                        <a href="{{ url_for('ads.ads', category='Sport', search=request.args.get('search', '')) }}"
+                        <a href="{{ url_for(endpoint, category='Sport', search=request.args.get('search', '')) }}"
                             class="btn {% if selected_category == 'Sport' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-trophy"></i> Sport
                         </a>
-                        <a href="{{ url_for('ads.ads', category='Knjige', search=request.args.get('search', '')) }}"
+                        <a href="{{ url_for(endpoint, category='Knjige', search=request.args.get('search', '')) }}"
                             class="btn {% if selected_category == 'Knjige' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-book"></i> Knjige
                         </a>
-                        <a href="{{ url_for('ads.ads', category='Ostalo', search=request.args.get('search', '')) }}"
+                        <a href="{{ url_for(endpoint, category='Ostalo', search=request.args.get('search', '')) }}"
                             class="btn {% if selected_category == 'Ostalo' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
                             <i class="bi bi-three-dots"></i> Ostalo
                         </a>
@@ -137,7 +138,7 @@
                     <!-- Prethodna stranica -->
                     {% if pagination.has_prev %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for('ads.ads', page=pagination.prev_num, category=selected_category, search=request.args.get('search', '')) }}">
+                        <a class="page-link" href="{{ url_for(endpoint, page=pagination.prev_num, category=selected_category, search=request.args.get('search', '')) }}">
                             <i class="bi bi-chevron-left"></i> Prethodna
                         </a>
                     </li>
@@ -161,7 +162,7 @@
                         </li>
                         {% else %}
                         <li class="page-item">
-                            <a class="page-link" href="{{ url_for('ads.ads', page=page_num, category=selected_category, search=request.args.get('search', '')) }}">
+                            <a class="page-link" href="{{ url_for(endpoint, page=page_num, category=selected_category, search=request.args.get('search', '')) }}">
                                 {{ page_num }}
                             </a>
                         </li>
@@ -171,7 +172,7 @@
                     <!-- Sljedeća stranica -->
                     {% if pagination.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for('ads.ads', page=pagination.next_num, category=selected_category, search=request.args.get('search', '')) }}">
+                        <a class="page-link" href="{{ url_for(endpoint, page=pagination.next_num, category=selected_category, search=request.args.get('search', '')) }}">
                             Sljedeća <i class="bi bi-chevron-right"></i>
                         </a>
                     </li>

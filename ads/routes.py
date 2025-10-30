@@ -58,13 +58,14 @@ def new_ad():
         new_ad = {
             'title': form.title.data,
             'description': form.description.data,
-            'seller': current_user.username,
-            'cellNo': form.cellNo.data,
+            'seller': (f"{current_user.first_name} {current_user.last_name}".strip() or current_user.username),
+            'cellNo': current_user.phone,
             'price': float(form.price.data),
             'category': form.category.data,
             'location': form.location.data or '',
             'image_id': None,
-            'created_at': datetime.now()
+            'created_at': datetime.now(),
+            'user_id': ObjectId(current_user.id)
         }
         
         # Upload slike u GridFS
@@ -84,6 +85,21 @@ def new_ad():
         return redirect(url_for('ads.ads'))
     
     return render_template('new_ad.html', form=form)
+
+@bp.route('/my')
+@login_required
+def my_ads():
+    """Moji oglasi (oglasi prijavljenog korisnika)"""
+    ads_collection = current_app.config['ADS_COLLECTION']
+    page = int(request.args.get('page', 1))
+    per_page = 12
+    query = {'user_id': ObjectId(current_user.id)}
+    total = ads_collection.count_documents(query)
+    skip = (page - 1) * per_page
+    ads = ads_collection.find(query).sort('created_at', -1).skip(skip).limit(per_page)
+    pagination = get_pagination_info(page, per_page, total)
+    pagination['pages'] = get_pagination_range(page, pagination['total_pages'])
+    return render_template('ads.html', ads=ads, selected_category=request.args.get('category',''), pagination=pagination, my_view=True)
 
 @bp.route('/<ad_id>')
 def ad_detail(ad_id):
@@ -108,13 +124,16 @@ def edit_ad(ad_id):
         abort(404)
     
     form = EditAdForm()
+    # Dozvoli uređivanje samo vlasniku
+    if ad.get('user_id') and str(ad.get('user_id')) != str(current_user.id):
+        abort(403)
     
     if form.validate_on_submit():
         updated_ad = {
             'title': form.title.data,
             'description': form.description.data,
-            'seller': current_user.username,
-            'cellNo': form.cellNo.data,
+            'seller': (f"{current_user.first_name} {current_user.last_name}".strip() or current_user.username),
+            'cellNo': current_user.phone,
             'price': float(form.price.data),
             'category': form.category.data,
             'location': form.location.data or '',
@@ -152,8 +171,6 @@ def edit_ad(ad_id):
     if request.method == 'GET':
         form.title.data = ad['title']
         form.description.data = ad['description']
-        form.seller.data = ad['seller']
-        form.cellNo.data = ad['cellNo']
         form.price.data = ad['price']
         form.category.data = ad['category']
         form.location.data = ad.get('location', '')
@@ -182,6 +199,10 @@ def delete_ad(ad_id):
     if not ad:
         abort(404)
     
+    # Dozvoli brisanje samo vlasniku
+    if ad.get('user_id') and str(ad.get('user_id')) != str(current_user.id):
+        abort(403)
+
     # Obriši sliku iz GridFS ako postoji
     if ad.get('image_id'):
         try:

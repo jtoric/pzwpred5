@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from flask_wtf.file import FileField, FileAllowed
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, Optional
 
 class LoginForm(FlaskForm):
     """Forma za prijavu korisnika"""
@@ -22,6 +23,7 @@ class LoginForm(FlaskForm):
         render_kw={'placeholder': 'Unesite lozinku'}
     )
     
+    remember_me = BooleanField('Zapamti me', default=False)
     submit = SubmitField('Prijavi se')
 
 class RegisterForm(FlaskForm):
@@ -64,4 +66,27 @@ class RegisterForm(FlaskForm):
     )
     
     submit = SubmitField('Registriraj se')
+
+class ProfileForm(FlaskForm):
+    """Forma za uređivanje korisničkog profila"""
+    first_name = StringField(
+        'Ime',
+        validators=[Optional(), Length(max=50)],
+        render_kw={'placeholder': 'Ime'}
+    )
+    last_name = StringField(
+        'Prezime',
+        validators=[Optional(), Length(max=50)],
+        render_kw={'placeholder': 'Prezime'}
+    )
+    phone = StringField(
+        'Broj mobitela',
+        validators=[Optional(), Length(min=8, max=20)],
+        render_kw={'placeholder': 'npr. +385912345678'}
+    )
+    profile_image = FileField(
+        'Profilna slika',
+        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Samo slike (JPG, PNG, GIF)')]
+    )
+    submit = SubmitField('Spremi profil')
 

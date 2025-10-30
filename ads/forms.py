@@ -23,21 +23,7 @@ class AdForm(FlaskForm):
         render_kw={'placeholder': 'Detaljno opišite vaš proizvod...', 'rows': 4}
     )
 
-    seller = StringField(
-        'Prodavač',
-        validators=[
-            DataRequired(message='Ime prodavača je obavezno')
-        ]
-    )
-
-    cellNo = StringField(
-        'Broj mobitela',
-        validators=[
-            DataRequired(message="Unesite broj mobitela"),
-            Length(min=8, max=15, message="Broj mora imati između 8 i 15 znamenki"),
-            Regexp(r'^\+?\d{8,15}$', message="Unesite ispravan broj (npr. +385912345678)")
-        ]
-    )
+    # seller i cellNo uklonjeni – sada se povlače iz profila korisnika
     
     price = DecimalField(
         'Cijena (€)',
