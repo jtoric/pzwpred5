@@ -103,18 +103,6 @@ Aplikacija podržava **Markdown formatiranje** u opisu oglasa! Korisnici mogu ko
 - Fullscreen mod
 - Brojanje riječi i linija
 
-Primjer:
-   ## Odličan laptop!
-   
-   **Specs:**
-   - Intel i7 procesor
-   - 16GB RAM
-   - 512GB SSD
-   
-   *U izvrsnom stanju!* Cijena nije fiksna.
-   
-   [Više informacija](https://example.com)
-
 ---
 
 

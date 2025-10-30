@@ -112,6 +112,17 @@
             </div>
         {% endif %}
     {% endwith %}
+    
+    {% if current_user.is_authenticated and not current_user.email_verified %}
+        <div class="container mt-2">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> 
+                Vaša email adresa nije verificirana. 
+                <a href="{{ url_for('auth.resend_verification') }}" class="alert-link">Ponovno pošalji verifikacijski email</a>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    {% endif %}
 
 
     <!-- Main Content -->

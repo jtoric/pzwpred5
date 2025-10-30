@@ -1,8 +1,11 @@
 from flask import Flask, render_template, abort
 from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager
+from flask_mail import Mail
 from pymongo import MongoClient
+from dotenv import load_dotenv
 import gridfs
+import os
 from .main import bp as main_bp
 from .ads import bp as ads_bp
 from .auth import bp as auth_bp
@@ -12,13 +15,26 @@ from .auth.models import User
 
 def create_app(config_name='development'):
     """App Factory pattern za kreiranje Flask aplikacije"""
+    # Učitaj varijable iz .env datoteke
+    load_dotenv()
+    
     app = Flask(__name__, template_folder='templates')
     
-    # Konfiguracija
-    app.config['SECRET_KEY'] = "jako-jak-random-key"
+    # Konfiguracija iz .env datoteke (s fallback vrijednostima)
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'jako-jak-random-key')
     
     # Inicijalizacija ekstenzija
     bootstrap = Bootstrap5(app)
+    
+    # Inicijalizacija Flask-Mail (učitaj iz .env)
+    app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'localhost')
+    app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+    app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
+    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', None)
+    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', None)
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'noreply@unizd-oglasnik.hr')
+    
+    mail = Mail(app)
     
     # Inicijalizacija Flask-Login
     login_manager = LoginManager()
@@ -33,8 +49,8 @@ def create_app(config_name='development'):
         return User.get_by_id(user_id)
     
     # MongoDB konekcija
-    client = MongoClient('mongodb://localhost:27017/')
-    db = client['pzw']
+    client = MongoClient(os.getenv('MONGODB_URI', 'mongodb://localhost:27017/'))
+    db = client[os.getenv('MONGODB_DB', 'pzw')]
     app.config['DB'] = db
     app.config['ADS_COLLECTION'] = db['ads']
     app.config['USERS_COLLECTION'] = db['users']
